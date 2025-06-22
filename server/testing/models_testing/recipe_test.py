@@ -2,10 +2,21 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from app import app
-from models import db, Recipe
+from models import db, Recipe, User
 
 class TestRecipe:
     '''User in models.py'''
+
+    def setup_method(self):
+        with app.app_context():
+            # Ensure a user exists for foreign key constraint
+            User.query.delete()
+            db.session.commit()
+            user = User(username="testuser")
+            user.password_hash = "password"
+            db.session.add(user)
+            db.session.commit()
+            self.user_id = user.id
 
     def test_has_attributes(self):
         '''has attributes title, instructions, and minutes_to_complete.'''
@@ -26,6 +37,7 @@ class TestRecipe:
                         """ smallness northward situation few her certainty""" + \
                         """ something.""",
                     minutes_to_complete=60,
+                    user_id=self.user_id
                     )
 
             db.session.add(recipe)

@@ -91,6 +91,7 @@ class TestUser:
             db.session.commit()
 
             user = User(username="Prabhdip")
+            user.password_hash = "somepassword"
 
             recipe_1 = Recipe(
                 title="Delicious Shed Ham",
@@ -129,3 +130,6 @@ class TestUser:
             # check that recipes were saved to user
             assert(recipe_1 in user.recipes)
             assert(recipe_2 in user.recipes)
+
+            user_id = user.id
+            user = db.session.get(User, user_id)
